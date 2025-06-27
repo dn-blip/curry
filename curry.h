@@ -43,14 +43,27 @@ struct cr_error {
 
 typedef struct cr_error cr_error;
 
+enum cr_attribute {
+	CURRY_TERM_ECHO_ON = 0, // Echo input
+	CURRY_TERM_ECHO_OFF, // No echo input
+	CURRY_TERM_CURSOR_VISIBLE, // Cursor visibility
+	CURRY_TERM_MOUSE_ENABLED, // Mouse support enabled
+	CURRY_TERM_MOUSE_DISABLED, // Mouse support disabled
+	CURRY_TERM_COLOR_DEPTH, // Color depth of the terminal
+};
+
+typedef enum cr_attribute cr_attribute;	
+
 // This following struct also holds platform-specific handles. There's an int here, for generallity.
 struct cr_state {
-	// curry_term_color_t fg_color, bg_color, 
-	int cursor_x, cursor_y;
-	bool cursor_visible, cursor_blinking, cursor_block, mouse_enabled, mouse_pressed;
-	bool vt_enabled, vt100_enabled, vt200_enabled, vt300_enabled, vt400_enabled;
-	bool input_echo;
-	int handle; // Platform-specific handle
+	int platform_handle; // Platform-specific handle (e.g., file descriptor, window handle)
+	bool initialized; // Is the terminal initialized?
+	bool mouse_enabled; // Is mouse support enabled?
+	bool mouse_pressed; // Is the mouse pressed?
+	cr_attribute attributes; // Terminal attributes
+	unsigned int size; // Size of the terminal in characters
+	unsigned int color_depth; // Color depth of the terminal
+	unsigned int width, height; // Width and height of the terminal in characters
 };
 
 typedef struct cr_state cr_state;
@@ -70,9 +83,7 @@ typedef struct cr_context cr_context;
 
 CURRY_API cr_error cr_init(cr_context *ctx);
 
-CURRY_API cr_state cr_get_state(cr_context ctx);
-
-CURRY_API cr_error cr_set_state(cr_context* ctx, cr_state state);
+CURRY_API cr_error cr_get_attribute(cr_context ctx, cr_attribute attribute, void* value);
 
 CURRY_API unsigned int cr_get_size(cr_context ctx);
 
@@ -102,12 +113,43 @@ CURRY_API cr_error cr_init(cr_context *ctx) {
 		return (cr_error){CURRY_TERM_ERROR_INIT_FAILED, "Context is NULL"};
 	}
 
-	ctx->platform = CURRY_TERM_PLATFORM_UNKNOWN; // Default to unknown
-	ctx->state = (cr_state){0}; // Initialize state with default values
-	ctx->width = 80; // Default terminal width
-	ctx->height = 24; // Default terminal height
+	#ifdef _WIN32
+	#include <windows.h>
 
-	// Platform-specific initialization can be added here
+	ctx->platform = CURRY_TERM_PLATFORM_WINDOWS;
+	ctx->state.platform_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (ctx->state.platform_handle == INVALID_HANDLE_VALUE) {
+		return (cr_error){CURRY_TERM_ERROR_INIT_FAILED, "Failed to get standard output handle"};
+	}
+	ctx->state.initialized = true;
+	ctx->state.mouse_enabled = false;
+	ctx->state.mouse_pressed = false;
+	ctx->state.attributes = CURRY_TERM_ECHO_ON; // Default attribute
+
+	#elif defined(__linux__)
+	#include <unistd.h>
+	#include <termios.h>
+
+	ctx->state.platform_handle = STDOUT_FILENO; // Standard output file descriptor
+	if (ctx->state.platform_handle < 0) {
+		return (cr_error){CURRY_TERM_ERROR_INIT_FAILED, "Failed to get standard output file descriptor"};
+	}
+	ctx->state.initialized = true;
+	ctx->state.mouse_enabled = false;
+	ctx->state.mouse_pressed = false;
+	ctx->state.attributes = CURRY_TERM_ECHO_ON; // Default attribute
+
+	ctx->platform = CURRY_TERM_PLATFORM_LINUX;
+
+
+	#elif defined(__APPLE__)
+	ctx->platform = CURRY_TERM_PLATFORM_MACOS;
+	#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+	ctx->platform = CURRY_TERM_PLATFORM_BSD;
+	#else
+	ctx->platform = CURRY_TERM_PLATFORM_UNKNOWN;
+		return (cr_error){CURRY_TERM_ERROR_UNKNOWN_PLATFORM, "Unknown platform"};
+	#endif
 
 	return (cr_error){CURRY_TERM_SUCCESS, "Initialization successful"};
 
