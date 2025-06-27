@@ -6,6 +6,14 @@
 extern "C" {
 #include <stdbool.h>
 
+// - Macros - //
+#ifndef CURRY_API
+#define CURRY_API static
+#endif
+
+#ifndef curry_malloc(sz)
+#define curry_malloc(sz) malloc(sz)
+#endif
 
 // - Types and Enums - //
 
@@ -20,7 +28,7 @@ enum cr_platform {
 typedef enum cr_platform cr_platform;
 
 enum cr_term_errors {
-	CURRY_TERM_ERROR_NONE = 0,
+	CURRY_TERM_SUCCESS = 0,
 	CURRY_TERM_ERROR_INIT_FAILED,
 	CURRY_TERM_ERROR_INVALID_STATE,
 	CURRY_TERM_ERROR_INVALID_SIZE,
@@ -29,7 +37,7 @@ enum cr_term_errors {
 };
 
 struct cr_error {
-	cry_term_errors short_form;
+	cr_term_errors short_form;
 	const char message[512];
 };
 
@@ -60,24 +68,24 @@ typedef struct cr_context cr_context;
 
 // - Functions - //
 
-cr_error cr_init(curry_term_context *ctx);
+CURRY_API cr_error cr_init(cr_context *ctx);
 
-cr_state cr_state(cr_context* ctx);
+CURRY_API cr_state cr_get_state(cr_context ctx);
 
-cr_state cr_state(cr_context* ctx, curry_term_state_t state);
+CURRY_API cr_error cr_set_state(cr_context* ctx, cr_state state);
 
-unsigned int cr_size(cr_context* ctx);
+CURRY_API unsigned int cr_get_size(cr_context ctx);
 
-cr_error cr_set_size(cr_context* ctx, uint32_t width, uint32_t height);
+CURRY_API cr_error cr_set_size(cr_context* ctx, uint32_t width, uint32_t height);
 
-cr_error cr_set_color(cr_context* ctx, const int rgb[3]);
+CURRY_API cr_error cr_set_color(cr_context* ctx, const int rgb[3]);
 
 // curry_term_state_t curry_term_reset(curry_term_context* ctx);
 
 
 } // extern "C"
 #endif // __cplusplus
-#endif // curry.h
+#endif // CURRY_H
 
 #ifndef CURRY_IMPLEMENTATION
 #define CURRY_IMPLEMENTATION
@@ -87,6 +95,21 @@ extern "C" {
 #include <stdint.h>
 #include <stdarg.h>
 #include <stdbool.h>
+
+CURRY_API cr_error cr_init(cr_context *ctx) {
+	// Initialize the context based on the platform
+	if (!ctx) {
+		return (cr_error){CURRY_TERM_ERROR_INIT_FAILED, "Context is NULL"};
+	}
+
+	ctx->platform = CURRY_TERM_PLATFORM_UNKNOWN; // Default to unknown
+	ctx->state = (cr_state){0}; // Initialize state with default values
+	ctx->width = 80; // Default terminal width
+	ctx->height = 24; // Default terminal height
+
+	// Platform-specific initialization can be added here
+
+	return (cr_error){CURRY_TERM_SUCCESS, "Initialization successful"};
 
 }
 #endif // __cplusplus
