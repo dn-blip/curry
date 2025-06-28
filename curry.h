@@ -47,7 +47,7 @@ typedef enum {
 } cr_attribute;
 
 typedef struct {
-	int platform_handle;
+	void* platform_handle;
 	bool initialized;
 	bool mouse_enabled;
 	bool mouse_pressed;
@@ -107,7 +107,7 @@ CURRY_API cr_error cr_init(cr_context *ctx) {
 			cr_error err = { CURRY_TERM_ERROR_INIT_FAILED, "Failed to get console handle." };
 			return err;
 		}
-		ctx->state.platform_handle = (int)hConsoleHandle;
+		ctx->state.platform_handle = hConsoleHandle;
 		ctx->state.initialized = true;
 		
 		// TODO: Set attributes using GetConsoleMode or SetConsoleMode
