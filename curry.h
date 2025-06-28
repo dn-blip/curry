@@ -98,21 +98,20 @@ extern "C" {
 
 CURRY_API cr_error cr_init(cr_context *ctx) {
 	if (!ctx) {
-		cr_error err = { CURRY_TERM_ERROR_INIT_FAILED, "Context pointer is null." };
-		return err
+		cr_error err = { CURRY_TERM_ERROR_INIT_FAILED, "The pointer to cr_context is NULL." };
+		return err;
 
 	#ifdef _WIN32
 	#include <windows.h>
 		ctx->platform = CURRY_TERM_PLATFORM_WINDOWS;
 		HANDLE hConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 		if (hConsoleHandle == INVALID_HANDLE_VALUE) {
-			cr_error err = { CURRY_TERM_ERROR_INIT_FAILED, "Failed to get console handle." };
+			cr_error err = { CURRY_TERM_ERROR_INIT_FAILED, "Failed to obtain a suitable HANDLE." };
 			return err;
 		}
 		ctx->state.platform_handle = (void*)hConsoleHandle;
 		ctx->state.initialized = true;
-		
-		// TODO: Set attributes using GetConsoleMode or SetConsoleMode
+		cr_error success = {CURRY_TERM_SUCCESS, "No errors occured."}
 	#endif
 }
 
