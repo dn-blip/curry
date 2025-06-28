@@ -71,6 +71,8 @@ extern "C" {
 
 CURRY_API cr_error cr_init(cr_context *ctx);
 
+CURRY_API cr_error cr_set_attributr(cr_context *ctx, cr_attribute attribute);
+
 CURRY_API cr_error cr_get_attribute(cr_context *ctx, cr_attribute attribute, void* value);
 
 CURRY_API unsigned int cr_get_size(cr_context *ctx);
