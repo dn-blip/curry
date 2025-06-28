@@ -77,7 +77,7 @@ CURRY_API unsigned int cr_get_size(cr_context *ctx);
 
 CURRY_API cr_error cr_set_size(cr_context* ctx, uint32_t width, uint32_t height);
 
-CURRY_API cr_error cr_set_color(cr_context* ctx, const int rgb[3]);
+CURRY_API cr_error cr_set_color(cr_context* ctx, const uint8_t rgb[3]);
 
 #ifdef __cplusplus
 }
