@@ -14,11 +14,6 @@
 	#define CURRY_API static
 #endif
 
-
-#ifndef curry_malloc
-#define curry_malloc(sz) malloc(sz)
-#endif
-
 // - Types and Enums - //
 
 typedef enum {
@@ -142,6 +137,9 @@ CURRY_API cr_error cr_init(cr_context *ctx) {
 	ctx->platform = CURRY_TERM_PLATFORM_MACOS;
 	ctx->state.platform_handle.fd_handle = STDOUT_FILENO;
 	ctx->state.initialized = true;
+#endif
+#ifdef __FreeBSD__
+	// TODO: FreeBSD support
 #endif
 
 	cr_error err = { CURRY_TERM_SUCCESS, "Initialization successful." };
