@@ -116,7 +116,7 @@ CURRY_API cr_error cr_init(cr_context *ctx) {
 		}
 		ctx->state.platform_handle = (void*)hConsoleHandle;
 		ctx->state.initialized = true;
-		cr_error success = {CURRY_TERM_SUCCESS, "No errors occured."}
+		cr_error success = {CURRY_TERM_SUCCESS, "No errors occured."};
 	#endif
 }
 
