@@ -6,7 +6,7 @@ curry is a single-header, dependency-free library for creating terminal applicat
 
 ## Features
 - Written in C99
-- No dependencies
+- No dependencies other than the C standard library,
 - Easy to use: simply clone `curry.h` into your project.
 - Supports basic terminal operations like printing text, reading input, and clearing the screen
 
@@ -21,4 +21,4 @@ curry is a single-header, dependency-free library for creating terminal applicat
    - Include it in your source files with `#include "curry.h"`.
 
 ## Usage
-Compile like normal C code. Note that you need to link against `<termios.h>` on Linux/MacOS/BSD, and kernel32.lib on Windows. 
+Compile like normal C code. Note that you need to link against `kernel32.lib` on Windows. 

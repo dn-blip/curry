@@ -90,11 +90,13 @@ CURRY_API cr_error cr_set_attribute(cr_context *ctx, cr_attribute attr, bool val
 
 CURRY_API cr_error cr_get_attribute(cr_context *ctx, cr_attribute attr, bool value);
 
-CURRY_API unsigned int cr_get_size(cr_context *ctx);
-
 CURRY_API cr_error cr_set_size(cr_context* ctx, uint32_t width, uint32_t height);
 
+CURRY_API unsigned int cr_get_size(cr_context *ctx);
+
 CURRY_API cr_error cr_set_color(cr_context* ctx, const int rgb[3]);
+
+CURRY_API cr_state* cr_get_state(cr_context *ctx);
 
 CURRY_API cr_error cr_printf(const char *format, ...);
 
@@ -223,6 +225,11 @@ CURRY_API cr_error cr_set_color(cr_context* ctx, const int rgb[3]) {
 	}
 	cr_error err = { CURRY_TERM_SUCCESS, "Color set successfully." };
 	return err;
+}
+
+CURRY_API cr_state* cr_get_state(cr_context *ctx) {
+	if (!ctx) return NULL;
+	return &ctx->state;
 }
 
 CURRY_API cr_error cr_printf(const char *format, ...) {
