@@ -1,27 +1,49 @@
-#include "../curry.h"
+/*
+====== Demo Description ======
+NAME: red_text.c
+
+DESCRIPTION: This example demonstrates how to use curry's API to set the
+terminal color to red, without using ANSI escape codes.
+
+WRITTEN BY: Daniel Nzekwe "dn-blip"
+
+========= Usage ===============
+
+
+Compile this code with a C compiler, ensuring that the curry library is linked.
+This code also depends on kernel32.lib on Windows, so makke sure that's linked,
+or use the C++ Console Application template in Visual Studio.
+
+
+
+====== Functions Used ========
+''cr_init'' to initialize the terminal context,
+''cr_set_color'' to set the terminal color,
+and ''cr_printf'' to print a message in the specified color.
+
+
+*/
 #define CURRY_IMPLEMENTATION
+#include "../curry.h"
+
 #include <stdio.h>
 
-// This demo shows a basic working example with curry's terminal API.
 int main(void) {
-    // Initialize a context, which holds some info about the terminal
-    // and platform. it has to be initialized seperately, as most functions either return
-    // cr_error, the thing that was to be returned, or void.
-    // cr_init() also fills the context with useful info about OS specifics.
-    cr_context *ctx;
-    cr_init(ctx);
+    cr_context ctx;
+    cr_error err = cr_init(&ctx);
 
-    cr_state initial_state = cr_get_state(*ctx);
-
-    // To set colors, you kinda have to pass the memory for the color buffer.
-
-    unsigned int rgb[3] = {255, 0, 0};
-    cr_error err = cr_set_color(ctx, rgb);
-
-    if (err != CR_TERM_SUCCESS) {
+    // First, check if initialization was successful
+    if (err.code != CURRY_TERM_SUCCESS) {
+        fprintf(stderr, "Error initializing terminal: %s\n", err.message);
+        return 1;
+    }
+    // Then, set some attributes
+    int rgb[3] = {255, 0, 0}; // Red color
+    err = cr_set_color(&ctx, rgb);
+    if (err.code != CURRY_TERM_SUCCESS) {
         fprintf(stderr, "Error setting color: %s\n", err.message);
         return 1;
     }
-
-    printf("This text should be red!\n");
+    // Finally, print a message in red
+    cr_printf("This should be red, and we didn't use ANSI codes!\n");
 }
