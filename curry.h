@@ -3,14 +3,19 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 // - Macros - //
-#ifndef CURRY_API
-#define CURRY_API static
+#ifndef CR_API
+#define CR_API static
 #endif
 
-#ifndef curry_malloc
-#define curry_malloc(sz) malloc(sz)
+#ifndef cr_malloc
+#define cr_malloc(sz) malloc(sz)
+#endif
+
+#ifndef cr_free
+#define cr_free(ptr) free(ptr)
 #endif
 
 // - Types and Enums - //
@@ -69,17 +74,17 @@ extern "C" {
 
 // - Functions - //
 
-CURRY_API cr_error cr_init(cr_context *ctx);
+CR_API cr_error cr_init(cr_context *ctx);
 
-CURRY_API cr_error cr_set_attribute(cr_context *ctx, cr_attribute attribute);
+CR_API cr_error cr_set_attribute(cr_context *ctx, cr_attribute attribute);
 
-CURRY_API cr_error cr_get_attribute(cr_context *ctx, cr_attribute attribute, void* value);
+CR_API cr_error cr_get_attribute(cr_context *ctx, cr_attribute attribute, void* value);
 
-CURRY_API unsigned int cr_get_size(cr_context *ctx);
+CR_API unsigned int cr_get_size(cr_context *ctx);
 
-CURRY_API cr_error cr_set_size(cr_context* ctx, uint32_t width, uint32_t height);
+CR_API cr_error cr_set_size(cr_context* ctx, uint32_t width, uint32_t height);
 
-CURRY_API cr_error cr_set_color(cr_context* ctx, const uint8_t rgb[3]);
+CR_API cr_error cr_set_color(cr_context* ctx, const uint8_t rgb[3]);
 
 #ifdef __cplusplus
 }
